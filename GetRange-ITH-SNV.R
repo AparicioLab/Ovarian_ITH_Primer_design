@@ -158,7 +158,8 @@ for (ri in seq(nrow(indf))) {
    diff=pos2-pos1
    if ( diff >= 50 )  pos=pos1+(pos2-pos1)/2 else pos=pos1 
    
-   wt <- as.character(getSeq(SNP_Hsapiens,chr,pos,pos))
+   # Annotation file uses Ref allele (fails is SNP masked allele is used)
+   wt <- as.character(getSeq(Hsapiens,chr,pos,pos))
     
 # Fake the SNV to be just the complement of WT position (as SNV allele is not known)
 
