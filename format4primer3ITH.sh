@@ -58,7 +58,7 @@ echo "Preparing Prime3 input file..."
 		width = "20"  # 10 bp on either side of SNV
 		rstart = `echo "($seq/2)-($width/2)" | bc`
 	        if [[ $range < "1" ]];
-                then    target=$rstart","$rstart;
+                then    target=$rstart","$width;
                 else    length=`echo "$width + $range" | bc ` ;
 			target=$rstart","$length;
         	fi	
