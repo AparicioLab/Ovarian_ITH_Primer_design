@@ -73,7 +73,7 @@ outfile=paste(p3dir,p3file,sep="/")
 input=paste(sourcedir,file,sep="/")
 
 # offsets (sequences on either side of SNV,indel for design space)
-offset=200
+offset=250
 WToffset=5
 
 # Select the appropriate Genome (mask) - for reference only
@@ -86,7 +86,7 @@ indf <- read.table(file=input,  stringsAsFactors = FALSE, header=TRUE)
 
                   
 outdf <- data.frame(ID = rep("", nrow(indf)),
-		                 Chr = rep("", nrow(indf)),
+		     Chr = rep("", nrow(indf)),
                      Start = rep(0, nrow(indf)),
                      End = rep(0, nrow(indf)),
                      Indel = rep("", nrow(indf)),
@@ -98,14 +98,15 @@ outdf <- data.frame(ID = rep("", nrow(indf)),
 for (ri in seq(nrow(indf))) {
 
   # for format  2:139318499-139318499
-   chr <- paste("chr", strsplit(indf[ri,1], split=":")[[1]][1], sep="")
-   start <- as.numeric(strsplit(strsplit(indf[ri,1], split=":")[[1]][2], split = "-")[[1]][1])
-   end <- as.numeric(strsplit(strsplit(indf[ri,1], split=":")[[1]][2], split = "-")[[1]][2])
+   pat <- indf[ri,1]
+   chr <- paste("chr", strsplit(indf[ri,2], split=":")[[1]][1], sep="")
+   start <- as.numeric(strsplit(strsplit(indf[ri,2], split=":")[[1]][2], split = "-")[[1]][1])
+   end <- as.numeric(strsplit(strsplit(indf[ri,2], split=":")[[1]][2], split = "-")[[1]][2])
 
-  if ( start == end ) id = paste(chr,start,sep="_")
-  if ( start != end ) id = paste(paste(chr,start,sep="_"), end, sep="-")
+  if ( start == end ) id = paste(pat, paste(chr,start,sep="_"),sep="_")
+  if ( start != end ) id = paste(pat, paste(paste(chr,start,sep="_"), end, sep="-"), sep="_")
 
-# The indel or SNV has to match exactly so we get the reference sequences from hg19
+# The indel or SNV has to match exactly so we get the reference sequences (not SNP masked!) from hg19
  idseq <- as.character(getSeq(Hsapiens,chr,start,end))
  
  # If the index <5 or it is an SNV then we need 5 bp on either side to match (for visualization only)
