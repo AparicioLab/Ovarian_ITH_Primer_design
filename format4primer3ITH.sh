@@ -37,6 +37,11 @@ echo "Preparing Prime3 input file..."
   for i in `cat $source | awk -F"," '{print $2}' | tr -d '"' ` 
 	do
 	
+	# do not process headers
+	if [[ $i =~ "ID" ]];
+		then	continue;
+	fi
+	
 	# This section extracts the required information from the file
 	# Sequence_ID must contain the Sample ID_Chr_start-end
 
@@ -55,8 +60,9 @@ echo "Preparing Prime3 input file..."
 	seqlen=`echo $seq | wc -c`
 		# The SNV or Indel start is always the middle position of seq
 		# <start>,<length>
-		width = "20"  # 10 bp on either side of SNV
-		rstart = `echo "($seq/2)-($width/2)" | bc`
+		# 10 bp on either side of SNV
+		width = 20 
+		rstart = `echo "($seqlen/2)-($width/2)" | bc`
 	        if [[ $range < "1" ]];
                 then    target=$rstart","$width;
                 else    length=`echo "$width + $range" | bc ` ;
