@@ -61,7 +61,8 @@ outpath=paste(basedir,"Annotate", sep="/")
 ######################
 # These are the input files
 #type="indel"
-type="SNV"
+#type="SNV"
+type="ITH"
 
 file="ITH_pos.txt"
 
