@@ -9,25 +9,31 @@
 
 
 # These commands must be specifed in order for this script to work
-# source("http://www.bioconductor.org/biocLite.R"); source("http://www.bioconductor.org/biocLite.R"); biocLite("BSgenome"); biocLite("BSgenome.Hsapiens.UCSC.hg19"); library('BSgenome.Hsapiens.UCSC.hg19')
+# source("http://www.bioconductor.org/biocLite.R"); source("http://www.bioconductor.org/biocLite.R"); biocLite("BSgenome"); biocLite("BSgenome.Hsapiens.UCSC.hg19")
+# install.packages(dbSNP)
+# library(snp.plotter)
+# source("http://bioconductor.org/biocLite.R")
+# biocLite("SNPlocs.Hsapiens.dbSNP.20120608")
 
 library(Biostrings)
 library("IRanges")
 library("GenomicRanges")
 library(Rsamtools)
+library('BSgenome.Hsapiens.UCSC.hg19')
 
 #################################################
 # Directory structure - uncomment for first running of script
 Project="ITH"
 # homebase="/Users/dyap/Documents/Breast Cancer" # MOMAC14
-homebase="/home/dyap/Projects" # beast
+# homebase="/home/dyap/Projects" # beast
+homebase="E:\\DATA\\DOCUMENTS\\WORK" # ASROCK
 
 setwd(homebase)
-# system('mkdir ITH')
+#system('mkdir ITH')
 setwd(paste(homebase,Project,sep="/"))
-# system('mkdir primer3')
-# system('mkdir positions')
-# system('mkdir Annotate')
+#system('mkdir primer3')
+#system('mkdir positions')
+#system('mkdir Annotate')
 getwd()
 
 #######################################
@@ -74,7 +80,7 @@ outfile=paste(p3dir,p3file,sep="/")
 input=paste(sourcedir,file,sep="/")
 
 # offsets (sequences on either side of SNV,indel for design space)
-offset=250
+offset=300
 WToffset=5
 
 # Select the appropriate Genome (mask) - for reference only
@@ -148,17 +154,18 @@ for (ri in seq(nrow(indf))) {
 # Assume indels are <40bp on the same chromosome
 
   # for format  2:139318499-139318499
-   chr <- paste("chr", strsplit(indf[ri,1], split=":")[[1]][1], sep="")
-   chrom <- strsplit(indf[ri,1], split=":")[[1]][1]
-   pos1 <- as.numeric(strsplit(strsplit(indf[ri,1], split=":")[[1]][2], split = "-")[[1]][1])
-   pos2 <- as.numeric(strsplit(strsplit(indf[ri,1], split=":")[[1]][2], split = "-")[[1]][2])
-   
-   if ( pos1 == pos2 ) id = paste(chr,pos1,sep="_")
-   if ( pos1 != pos2 ) id = paste(paste(chr,pos2,sep="_"), pos2, sep="-")
+   pat <- indf[ri,1]
+   chr <- paste("chr", strsplit(indf[ri,2], split=":")[[1]][1], sep="")
+   chrom <- strsplit(indf[ri,2], split=":")[[1]][1]
+   start <- as.numeric(strsplit(strsplit(indf[ri,2], split=":")[[1]][2], split = "-")[[1]][1])
+   end <- as.numeric(strsplit(strsplit(indf[ri,2], split=":")[[1]][2], split = "-")[[1]][2])
+
+  if ( start == end ) id = paste(pat, paste(chr,start,sep="_"),sep="_")
+  if ( start != end ) id = paste(pat, paste(paste(chr,start,sep="_"), end, sep="-"), sep="_")
    
    # It indel is >50 bp, the middle is chosen to check annotation
-   diff=pos2-pos1
-   if ( diff >= 50 )  pos=pos1+(pos2-pos1)/2 else pos=pos1 
+   diff=end-start
+   if ( diff >= 50 )  pos=start+(end-start)/2 else pos=start 
    
    # Annotation file uses Ref allele (fails is SNP masked allele is used)
    wt <- as.character(getSeq(Hsapiens,chr,pos,pos))
